@@ -6,6 +6,8 @@ import (
 	// "encoding/json"
 )
 
+var testMsg Message
+
 type FindHandler func(string) (Handler, bool)
 
 type Message struct {
@@ -37,26 +39,20 @@ func (client *Client) Read() {
 
 
 func (client *Client) Write(){
+	fmt.Println("WRITE")
+	if testMsg.Name != "" {
+		client.socket.WriteJSON(testMsg)
+	} else {
+		fmt.Println("ITS NILLL")
+	}
 	for msg := range client.send {
-		if err := client.socket.WriteJSON(msg); err != nil {
-			client.socket.WriteJSON(msg)
-			fmt.Println(msg.Name, '\n', msg.Data)
-			fmt.Println(err)
-		}
+		testMsg = msg
+		// if err := client.socket.WriteJSON(msg); err != nil {
+		// 	fmt.Println(err)
+		// 	break
+		// }
 	}
 	client.socket.Close();
-	// for msg := range client.send {
-	// 	w, err := client.socket.NextWriter(websocket.TextMessage)
-	// 	if err != nil {
-	// 		fmt.Println(err)
-	// 	}
-	// 	err1 := json.NewEncoder(w).Encode(msg)
-	// 	err2 := w.Close()
-	// 	if err1 != nil {
-	// 		fmt.Println(err1)
-	// 	}
-	// 	fmt.Println(err2)
-	// }
 }
 
 
