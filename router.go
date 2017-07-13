@@ -2,6 +2,7 @@ package main
 
 import(
 "github.com/gorilla/websocket"
+r "github.com/dancannon/gorethink"
 "net/http"
 "fmt"
 
@@ -17,11 +18,14 @@ type Handler func(*Client, interface{})
 
 type Router struct {
 	rules map[string]Handler
+	//Database Session
+	session *r.Session
 }
 
-func NewRouter() *Router{
+func NewRouter(session *r.Session) *Router{
 	router := &Router{
 		rules: make(map[string]Handler),
+		session: session,
 	}
 	return router
 }
@@ -42,7 +46,7 @@ func (rout *Router) ServeHTTP(w http.ResponseWriter, r *http.Request){
 		fmt.Fprint(w, err.Error())
 		return
 	}
-	client := NewClient(socket, rout.FindHandler)
+	client := NewClient(socket, rout.FindHandler, rout.session)
 	go client.Write();
 	client.Read();
 }
