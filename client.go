@@ -28,10 +28,11 @@ func (client *Client) Read() {
 			fmt.Println(err)
 			break
 		}
+		fmt.Println(message.Name)
 		if handler, found := client.findHandler(message.Name); found {
+			fmt.Println("Handler Found")
 			handler(client, message.Data)
 		}
-		
 	}
 
 	client.socket.Close()
